@@ -10,4 +10,19 @@ jobs:
       - run: |
           git clone https://github.com/ultralytics/yolov5
           cd yolov5
-          pip install -qr requirements.txt
+          pipenv --python 3.7
+          pipenv install -r ./requirements.txt
+          cd ..
+      - run: |
+          mkdir MaskDataSet
+          cd MaskDataSet
+          curl -L "https://public.roboflow.com/ds/9rYgiWaqnY?key=$ROBOFLOW_KEY" > roboflow.zip; unzip roboflow.zip; rm roboflow.zip
+          echo "train: ../MaskDataSet/train/images" > data.yaml
+          echo "val: ../MaskDataSet/valid/images" >> data.yaml
+          echo "" >> data.yaml
+          echo "nc: 2" >> data.yaml
+          echo "names: ['mask' 'no-mask']" >> data.yaml
+          cd ..
+      - run: |
+          cd yolov5
+          python train.py --data ../MaskDataSet/data.yaml --cfg yolov5s.yaml --weights yolov5s.pt --batch-size 16 --epochs 10
