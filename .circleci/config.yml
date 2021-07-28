@@ -22,7 +22,7 @@ jobs:
           echo "val: ../MaskDataSet/valid/images" >> data.yaml
           echo "" >> data.yaml
           echo "nc: 2" >> data.yaml
-          echo "names: ['mask' 'no-mask']" >> data.yaml
+          echo "names: ['mask', 'no-mask']" >> data.yaml
           cd ..
       - run: |
           cd yolov5
