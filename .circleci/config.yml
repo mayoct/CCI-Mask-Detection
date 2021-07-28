@@ -12,6 +12,7 @@ jobs:
           cd yolov5
           pip install pipenv
           pipenv --python 3.7
+          pipenv shell
           pipenv install -r ./requirements.txt
           cd ..
       - run: |
