@@ -10,10 +10,9 @@ jobs:
       - run: |
           git clone https://github.com/ultralytics/yolov5
           cd yolov5
-          pip install pipenv
-          pipenv --python 3.7
-          pipenv shell
-          pipenv install -r ./requirements.txt
+          pyenv install 3.7
+          pyenv local 3.7
+          pip install -r requirements.txt
           cd ..
       - run: |
           mkdir MaskDataSet
