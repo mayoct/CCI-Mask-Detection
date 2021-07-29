@@ -16,6 +16,10 @@ workflows:
       - test_detection_with_gpu:
           requires:
             - train_maskdataset_with_gpu
+      - test_detection_with_raspi:
+          requires:
+            - train_maskdataset_with_gpu
+
 jobs:
   setup_yorov5:
     docker:
@@ -141,3 +145,42 @@ jobs:
       - store_artifacts:
           path: yolov5/runs/detect.zip
           destination: detect-gpu.zip
+  test_detection_with_raspi:
+    machine: true
+    resource_class: mayoct/raspi-x64-runner
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Check if the commit message includes 'kick-raspi' to continue this job
+          command: |
+            COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
+            TRIGGER_MATCH_PATTERN="^.*kick-raspi.*$"
+            if [[ ${COMMIT_MESSAGE} =~ ${TRIGGER_MATCH_PATTERN} ]]; then
+              echo "Will start mask detection."
+            else
+              echo "Will skip mask detection."
+              circleci-agent step halt
+            fi
+      - run:
+          name: Setup up Python environment for YOLOv5
+          command: |
+            cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
+            cd yolov5
+            pyenv install 3.7.11
+            pyenv local 3.7.11
+            pip install -r requirements.txt
+            cd ..
+      - run:
+          name: Test detect.py
+          command: |
+            cd yolov5
+            rm -rf runs/detect
+            mkdir -p runs/detect
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/mask.jpg
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/no_mask.jpg
+            zip -r runs/detect.zip runs/detect
+      - store_artifacts:
+          path: yolov5/runs/detect.zip
+          destination: detect-raspi.zip
