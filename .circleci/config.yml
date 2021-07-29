@@ -3,17 +3,18 @@ version: 2.1
 workflows:
   my_workflow:
     jobs:
-      - setup_yorov5:
-          context:
-            - docker
-      - setup_maskdataset:
-          context:
-            - docker
-      - train_maskdataset_with_gpu:
-          requires:
-            - setup_yorov5
-            - setup_maskdataset
-      - test_detection_with_gpu
+      - dummy
+#      - setup_yorov5:
+#          context:
+#            - docker
+#      - setup_maskdataset:
+#          context:
+#            - docker
+#      - train_maskdataset_with_gpu:
+#          requires:
+#            - setup_yorov5
+#            - setup_maskdataset
+#      - test_detection_with_gpu
 jobs:
   setup_yorov5:
     docker:
@@ -149,3 +150,23 @@ jobs:
       - store_artifacts:
           path: runs/detect/exp
           destination: image_checked
+  dummy:
+    machine:
+      resource_class: gpu.nvidia.small
+      image: ubuntu-1604-cuda-10.1:201909-23
+    steps:
+      - checkout
+      - run:
+          name: Check GPU status
+          command:  nvidia-smi
+      - attach_workspace:
+          at: .
+      - run:
+          name: Setup up Python environment for YOLOv5
+          command: |
+            cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
+            cd yolov5
+            pyenv install 3.7.11
+            pyenv local 3.7.11
+            pip install -r requirements.txt
+            cd ..
