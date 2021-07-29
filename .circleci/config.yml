@@ -64,6 +64,17 @@ jobs:
       - attach_workspace:
           at: .
       - run:
+          name: Check if the commit message includes 'kick-training' to continue this job
+          command: |
+            COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
+            TRIGGER_MATCH_PATTERN="^.*kick-training.*$"
+            if [[ ${COMMIT_MESSAGE} =~ ${TRIGGER_MATCH_PATTERN} ]]; then
+              echo "Will start MaskDataSet training."
+            else
+              echo "Will skip MaskDataSet training."
+              circleci-agent step halt
+            fi
+      - run:
           name: Setup up Python environment for YOLOv5
           command: |
             cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
@@ -76,7 +87,7 @@ jobs:
           name: Train MaskDataSet
           command: |
             cd yolov5
-            python train.py --data ../MaskDataSet/data.yaml --cfg yolov5s.yaml --weights yolov5s.pt --batch-size 16 --epochs 10
+            python train.py --data ../MaskDataSet/data.yaml --cfg yolov5s.yaml --weights yolov5s.pt --batch-size 16 --epochs 100
       - persist_to_workspace:
           root: .
           paths:
