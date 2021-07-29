@@ -71,7 +71,7 @@ jobs:
           name: Check if the commit message includes 'kick-training' to continue this job
           command: |
             COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
-            TRIGGER_MATCH_PATTERN="^.*kick-training.*$"
+            TRIGGER_MATCH_PATTERN="^.*kick-train.*$"
             if [[ ${COMMIT_MESSAGE} =~ ${TRIGGER_MATCH_PATTERN} ]]; then
               echo "Will start MaskDataSet training."
             else
@@ -124,7 +124,7 @@ jobs:
           name: Check if the commit message includes 'kick-detection' to continue this job
           command: |
             COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
-            TRIGGER_MATCH_PATTERN="^.*kick-detection.*$"
+            TRIGGER_MATCH_PATTERN="^.*kick-detect.*$"
             if [[ ${COMMIT_MESSAGE} =~ ${TRIGGER_MATCH_PATTERN} ]]; then
               echo "Will start mask detection."
             else
@@ -152,7 +152,7 @@ jobs:
             zip -r runs/detect.zip runs/detect
       - store_artifacts:
           path: runs/detect.zip
-          destination: detect.zip
+          destination: detect-gpu.zip
   dummy:
     machine:
       resource_class: gpu.nvidia.small
