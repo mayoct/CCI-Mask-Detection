@@ -58,6 +58,7 @@ jobs:
       resource_class: gpu.nvidia.small
       image: ubuntu-1604-cuda-10.1:201909-23
     steps:
+      - checkout
       - run:
           name: Check GPU status
           command:  nvidia-smi
