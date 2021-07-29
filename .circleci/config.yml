@@ -114,17 +114,6 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Check if the commit message includes 'kick-detection' to continue this job
-          command: |
-            COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
-            TRIGGER_MATCH_PATTERN="^.*kick-detect.*$"
-            if [[ ${COMMIT_MESSAGE} =~ ${TRIGGER_MATCH_PATTERN} ]]; then
-              echo "Will start mask detection."
-            else
-              echo "Will skip mask detection."
-              circleci-agent step halt
-            fi
-      - run:
           name: Setup up Python environment for YOLOv5
           command: |
             cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
@@ -152,17 +141,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - run:
-          name: Check if the commit message includes 'kick-raspi' to continue this job
-          command: |
-            COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
-            TRIGGER_MATCH_PATTERN="^.*kick-raspi.*$"
-            if [[ ${COMMIT_MESSAGE} =~ ${TRIGGER_MATCH_PATTERN} ]]; then
-              echo "Will start mask detection."
-            else
-              echo "Will skip mask detection."
-              circleci-agent step halt
-            fi
       - run:
           name: Setup up Python environment for YOLOv5
           command: |
