@@ -29,18 +29,17 @@ jobs:
             git clone https://github.com/ultralytics/yolov5
       - restore_cache:
           keys:
-            - pip- {{ .branch }} - {{ checksum "yolov5/requirement.txt" }}
+            - pip- {{ .Branch }} - {{ checksum "yolov5/requirement.txt" }}
       - run:
           name: Setup up Python environment for YOLOv5
           command: |
-            cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
             cd yolov5
             pyenv install 3.7.11
             pyenv local 3.7.11
             pip install -r requirements.txt
             cd ..
       - save_cache:
-          key: pip- {{ .branch }} - {{ checksum "yolov5/requirement.txt" }}
+          key: pip- {{ .Branch }} - {{ checksum "yolov5/requirement.txt" }}
           paths:
             - /home/circleci/.cache/pip
             - /home/circleci/.pyenv/versions/
@@ -96,7 +95,7 @@ jobs:
             fi
       - restore_cache:
           keys:
-            - pip- {{ .branch }} - {{ checksum "yolov5/requirement.txt" }}
+            - pip- {{ .Branch }} - {{ checksum "yolov5/requirement.txt" }}
       - run:
           name: Setup up Python environment for YOLOv5
           command: |
@@ -107,7 +106,7 @@ jobs:
             pip install -r requirements.txt
             cd ..
       - save_cache:
-          key: pip- {{ .branch }} - {{ checksum "yolov5/requirement.txt" }}
+          key: pip- {{ .Branch }} - {{ checksum "yolov5/requirement.txt" }}
           paths:
             - /home/circleci/.cache/pip
             - /home/circleci/.pyenv/versions/
