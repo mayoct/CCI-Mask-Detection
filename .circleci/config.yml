@@ -95,7 +95,7 @@ jobs:
           name: Train MaskDataSet
           command: |
             cd yolov5
-            python train.py --data ../MaskDataSet/data.yaml --cfg yolov5s.yaml --weights yolov5s.pt --batch-size 16 --epochs 100
+            python train.py --data ../MaskDataSet/data.yaml --cfg yolov5s.yaml --weights yolov5s.pt --batch-size 16 --epochs 300
             cd ..
       - persist_to_workspace:
           root: .
