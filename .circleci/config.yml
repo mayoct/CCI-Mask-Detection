@@ -9,10 +9,9 @@ workflows:
       - setup_maskdataset:
           context:
             - docker
-          requires:
-            - setup_yorov5
       - train_maskdataset_with_gpu:
           requires:
+            - setup_yorov5
             - setup_maskdataset
 
 jobs:
