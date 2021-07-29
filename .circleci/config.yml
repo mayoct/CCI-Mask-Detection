@@ -3,42 +3,61 @@ version: 2.1
 workflows:
   my_workflow:
     jobs:
-      - setup_environment:
+      - setup_yorov5:
           context:
             - docker
-      - train_with_gpu:
+      - setup_maskdataset:
+          context:
+            - docker
           requires:
-            - setup_environment
+            - setup_yorov5
+      - train_maskdataset_with_gpu:
+          requires:
+            - setup_maskdataset
 
 jobs:
-  setup_environment:
+  setup_yorov5:
     docker:
       - image: cimg/python:3.7.11
         auth:
           username: $DOCKER_HUB_USERNAME
           password: $DOCKER_HUB_ACCESS_TOKEN
     steps:
-      - run: |
-          git clone https://github.com/ultralytics/yolov5
-          cd yolov5
-          pyenv install 3.7.6
-          pyenv local 3.7.6
-          pip install -r requirements.txt
-          cd ..
-      - run: |
-          mkdir MaskDataSet
-          cd MaskDataSet
-          curl -L "https://public.roboflow.com/ds/9rYgiWaqnY?key=$ROBOFLOW_KEY" > roboflow.zip; unzip roboflow.zip; rm roboflow.zip
-          echo "train: ../MaskDataSet/train/images" > data.yaml
-          echo "val: ../MaskDataSet/valid/images" >> data.yaml
-          echo "" >> data.yaml
-          echo "nc: 2" >> data.yaml
-          echo "names: ['mask', 'no-mask']" >> data.yaml
-          cd ..
+      - run:
+          name: Set up YOLOv5 setup_environment
+          command: |
+            git clone https://github.com/ultralytics/yolov5
+            cd yolov5
+            pyenv install 3.7.6
+            pyenv local 3.7.6
+            pip install -r requirements.txt
+            cd ..
       - persist_to_workspace:
           root: .
           paths:
             - "yolov5"
+  setup_maskdataset:
+    docker:
+      - image: cimg/python:3.7.11
+        auth:
+          username: $DOCKER_HUB_USERNAME
+          password: $DOCKER_HUB_ACCESS_TOKEN
+    steps:
+      - run:
+          name: Set up MaskDataSet from ROBOFLOW(, which needs registration)
+          command:  |
+            mkdir MaskDataSet
+            cd MaskDataSet
+            curl -L "https://public.roboflow.com/ds/9rYgiWaqnY?key=$ROBOFLOW_KEY" > roboflow.zip; unzip roboflow.zip; rm roboflow.zip
+            echo "train: ../MaskDataSet/train/images" > data.yaml
+            echo "val: ../MaskDataSet/valid/images" >> data.yaml
+            echo "" >> data.yaml
+            echo "nc: 2" >> data.yaml
+            echo "names: ['mask', 'no-mask']" >> data.yaml
+            cd ..
+      - persist_to_workspace:
+          root: .
+          paths:
             - "MaskDataSet"
   train_with_gpu:
     machine:
