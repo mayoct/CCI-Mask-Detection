@@ -16,9 +16,9 @@ workflows:
       - test_detection_with_gpu:
           requires:
             - train_maskdataset_with_gpu
-#      - test_detection_with_raspi:
-#          requires:
-#            - train_maskdataset_with_gpu
+      - test_detection_with_raspi:
+          requires:
+            - train_maskdataset_with_gpu
 
 jobs:
   setup_yorov5:
@@ -95,7 +95,7 @@ jobs:
           name: Train MaskDataSet
           command: |
             cd yolov5
-            python train.py --data ../MaskDataSet/data.yaml --cfg yolov5s.yaml --weights yolov5s.pt --batch-size 16 --epochs 100
+            python train.py --data ../MaskDataSet/data.yaml --cfg yolov5s.yaml --weights yolov5s.pt --batch-size 16 --epochs 10
             cd ..
       - persist_to_workspace:
           root: .
@@ -136,7 +136,7 @@ jobs:
           destination: detect-gpu.zip
   test_detection_with_raspi:
     machine: true
-    resource_class: mayoct/raspi-x64-runner
+    resource_class: mayoct/arm-runner
     steps:
       - checkout
       - attach_workspace:
