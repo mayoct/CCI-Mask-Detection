@@ -27,25 +27,6 @@ jobs:
           name: Clone YOLOv5 resources
           command: |
             git clone https://github.com/ultralytics/yolov5
-      - restore_cache:
-          keys:
-            - pip- {{ .Branch }} - {{ checksum "yolov5/requirements.txt" }}
-      - run:
-          name: Setup up Python environment for YOLOv5
-          command: |
-            cd yolov5
-            if [ ! -d ~/.pyenv/versions/3.7.11 ]; then
-              pyenv install 3.7.11
-            fi
-            pyenv local 3.7.11
-            pip install -r requirements.txt
-            cd ..
-      - save_cache:
-          key: pip- {{ .Branch }} - {{ checksum "yolov5/requirements.txt" }}
-          paths:
-            - /home/circleci/.cache/pip
-            - /home/circleci/.pyenv/versions/
-            - /home/circleci/.local/lib/
       - persist_to_workspace:
           root: .
           paths:
@@ -95,26 +76,15 @@ jobs:
               echo "Will skip MaskDataSet training."
               circleci-agent step halt
             fi
-      - restore_cache:
-          keys:
-            - pip- {{ .Branch }} - {{ checksum "yolov5/requirements.txt" }}
       - run:
           name: Setup up Python environment for YOLOv5
           command: |
+            cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
             cd yolov5
-            if [ ! -d ~/.pyenv/versions/3.7.11 ]; then
-              cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
-              pyenv install 3.7.11
-            fi
+            pyenv install 3.7.11
             pyenv local 3.7.11
             pip install -r requirements.txt
             cd ..
-      - save_cache:
-          key: pip- {{ .Branch }} - {{ checksum "yolov5/requirements.txt" }}
-          paths:
-            - /home/circleci/.cache/pip
-            - /home/circleci/.pyenv/versions/
-            - /home/circleci/.local/lib/
       - run:
           name: Train MaskDataSet
           command: |
