@@ -3,19 +3,19 @@ version: 2.1
 workflows:
   my_workflow:
     jobs:
-      - setup_yorov5:
-          context:
-            - docker
-      - setup_maskdataset:
-          context:
-            - docker
-      - train_maskdataset_with_gpu:
-          requires:
-            - setup_yorov5
-            - setup_maskdataset
-      - test_detection_with_gpu:
-          requires:
-            - train_maskdataset_with_gpu
+#      - setup_yorov5:
+#          context:
+#            - docker
+#      - setup_maskdataset:
+#          context:
+#            - docker
+#      - train_maskdataset_with_gpu:
+#          requires:
+#            - setup_yorov5
+#            - setup_maskdataset
+#      - test_detection_with_gpu:
+#          requires:
+#            - train_maskdataset_with_gpu
       - test_detection_with_raspi:
           requires:
             - train_maskdataset_with_gpu
@@ -144,10 +144,7 @@ jobs:
       - run:
           name: Setup up Python environment for YOLOv5
           command: |
-            cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
             cd yolov5
-            pyenv install 3.7.11
-            pyenv local 3.7.11
             pip install -r requirements.txt
             cd ..
       - run:
