@@ -23,9 +23,27 @@ jobs:
           password: $DOCKER_HUB_ACCESS_TOKEN
     steps:
       - run:
-          name: Set up YOLOv5 setup_environment
+          name: Clone YOLOv5 resources
           command: |
             git clone https://github.com/ultralytics/yolov5
+      - restore_cache:
+          keys:
+            - pip- {{ .branch }} - {{ checksum "yolov5/requirement.txt" }}
+      - run:
+          name: Setup up Python environment for YOLOv5
+          command: |
+            cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
+            cd yolov5
+            pyenv install 3.7.11
+            pyenv local 3.7.11
+            pip install -r requirements.txt
+            cd ..
+      - save_cache:
+          key: pip- {{ .branch }} - {{ checksum "yolov5/requirement.txt" }}
+          paths:
+            - /home/circleci/.cache/pip
+            - /home/circleci/.pyenv/versions/
+            - /home/circleci/.local/lib/
       - persist_to_workspace:
           root: .
           paths:
@@ -75,6 +93,9 @@ jobs:
               echo "Will skip MaskDataSet training."
               circleci-agent step halt
             fi
+      - restore_cache:
+          keys:
+            - pip- {{ .branch }} - {{ checksum "yolov5/requirement.txt" }}
       - run:
           name: Setup up Python environment for YOLOv5
           command: |
@@ -84,11 +105,17 @@ jobs:
             pyenv local 3.7.11
             pip install -r requirements.txt
             cd ..
+      - save_cache:
+          key: pip- {{ .branch }} - {{ checksum "yolov5/requirement.txt" }}
+          paths:
+            - /home/circleci/.cache/pip
+            - /home/circleci/.pyenv/versions/
+            - /home/circleci/.local/lib/
       - run:
           name: Train MaskDataSet
           command: |
             cd yolov5
-            python train.py --data ../MaskDataSet/data.yaml --cfg yolov5s.yaml --weights yolov5s.pt --batch-size 16 --epochs 100
+            python train.py --data ../MaskDataSet/data.yaml --cfg yolov5s.yaml --weights yolov5s.pt --batch-size 16 --epochs 10
       - persist_to_workspace:
           root: .
           paths:
