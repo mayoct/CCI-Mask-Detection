@@ -3,16 +3,16 @@ version: 2.1
 workflows:
   my_workflow:
     jobs:
-#      - setup_yorov5:
-#          context:
-#            - docker
-#      - setup_maskdataset:
-#          context:
-#            - docker
-#      - train_maskdataset_with_gpu:
-#          requires:
-#            - setup_yorov5
-#            - setup_maskdataset
+      - setup_yorov5:
+          context:
+            - docker
+      - setup_maskdataset:
+          context:
+            - docker
+      - train_maskdataset_with_gpu:
+          requires:
+            - setup_yorov5
+            - setup_maskdataset
 #      - test_detection_with_gpu:
 #          requires:
 #            - train_maskdataset_with_gpu
