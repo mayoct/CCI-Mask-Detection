@@ -3,18 +3,19 @@ version: 2.1
 workflows:
   my_workflow:
     jobs:
-      - dummy
-#      - setup_yorov5:
-#          context:
-#            - docker
-#      - setup_maskdataset:
-#          context:
-#            - docker
-#      - train_maskdataset_with_gpu:
-#          requires:
-#            - setup_yorov5
-#            - setup_maskdataset
-#      - test_detection_with_gpu
+      - setup_yorov5:
+          context:
+            - docker
+      - setup_maskdataset:
+          context:
+            - docker
+      - train_maskdataset_with_gpu:
+          requires:
+            - setup_yorov5
+            - setup_maskdataset
+      - test_detection_with_gpu:
+          requires:
+            - train_maskdataset_with_gpu
 jobs:
   setup_yorov5:
     docker:
@@ -90,7 +91,7 @@ jobs:
           name: Train MaskDataSet
           command: |
             cd yolov5
-            python train.py --data ../MaskDataSet/data.yaml --cfg yolov5s.yaml --weights yolov5s.pt --batch-size 16 --epochs 300
+            python train.py --data ../MaskDataSet/data.yaml --cfg yolov5s.yaml --weights yolov5s.pt --batch-size 16 --epochs 30
             cd ..
       - persist_to_workspace:
           root: .
