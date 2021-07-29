@@ -22,6 +22,7 @@ jobs:
           username: $DOCKER_HUB_USERNAME
           password: $DOCKER_HUB_ACCESS_TOKEN
     steps:
+      - checkout
       - run:
           name: Clone YOLOv5 resources
           command: |
