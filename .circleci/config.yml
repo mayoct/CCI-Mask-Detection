@@ -95,7 +95,7 @@ jobs:
           name: Train MaskDataSet
           command: |
             cd yolov5
-            python train.py --data ../MaskDataSet/data.yaml --cfg yolov5s.yaml --weights yolov5s.pt --batch-size 16 --epochs 100
+            python train.py --data ../MaskDataSet/data.yaml --cfg yolov5s.yaml --weights yolov5s.pt --batch-size 16 --epochs 300
             cd ..
       - persist_to_workspace:
           root: .
@@ -128,8 +128,9 @@ jobs:
             cd yolov5
             rm -rf runs/detect
             mkdir -p runs/detect
-            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/mask.jpg
-            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/no_mask.jpg
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/face_w_mask1.jpg
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/face_w_mask2.jpg
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/face_wo_mask1.jpg
             zip -r runs/detect.zip runs/detect
       - store_artifacts:
           path: yolov5/runs/detect.zip
@@ -153,8 +154,9 @@ jobs:
             cd yolov5
             rm -rf runs/detect
             mkdir -p runs/detect
-            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/mask.jpg
-            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/no_mask.jpg
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/face_w_mask1.jpg
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/face_w_mask2.jpg
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/face_wo_mask1.jpg
             zip -r runs/detect.zip runs/detect
       - store_artifacts:
           path: yolov5/runs/detect.zip
