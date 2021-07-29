@@ -13,7 +13,7 @@ workflows:
           requires:
             - setup_yorov5
             - setup_maskdataset
-
+      - test_detection_with_gpu
 jobs:
   setup_yorov5:
     docker:
@@ -90,8 +90,62 @@ jobs:
           command: |
             cd yolov5
             python train.py --data ../MaskDataSet/data.yaml --cfg yolov5s.yaml --weights yolov5s.pt --batch-size 16 --epochs 300
+            cd ..
       - persist_to_workspace:
           root: .
           paths:
             - "yolov5"
             - "MaskDataSet"
+      - run:
+          name: Test
+          command: |
+            cd yolov5
+            rm -rf runs/detect/exp
+            python detect.py --weights yolov5s.pt --img 640 --conf 0.25 --source ../images/
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/mask.jpg
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/no_mask.jpg
+      - store_artifacts:
+          path: runs/detect/exp
+          destination: image_checked
+  test_detection_with_gpu:
+    machine:
+      resource_class: gpu.nvidia.small
+      image: ubuntu-1604-cuda-10.1:201909-23
+    steps:
+      - checkout
+      - run:
+          name: Check GPU status
+          command:  nvidia-smi
+      - attach_workspace:
+          at: .
+      - run:
+          name: Check if the commit message includes 'kick-training' to continue this job
+          command: |
+            COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
+            TRIGGER_MATCH_PATTERN="^.*kick-detection.*$"
+            if [[ ${COMMIT_MESSAGE} =~ ${TRIGGER_MATCH_PATTERN} ]]; then
+              echo "Will start mask detection."
+            else
+              echo "Will skip mask detection."
+              circleci-agent step halt
+            fi
+      - run:
+          name: Setup up Python environment for YOLOv5
+          command: |
+            cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
+            cd yolov5
+            pyenv install 3.7.11
+            pyenv local 3.7.11
+            pip install -r requirements.txt
+            cd ..
+      - run:
+          name: Test detect.py
+          command: |
+            cd yolov5
+            rm -rf runs/detect/exp
+            python detect.py --weights yolov5s.pt --img 640 --conf 0.25 --source ../images/
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/mask.jpg
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/no_mask.jpg
+      - store_artifacts:
+          path: runs/detect/exp
+          destination: image_checked
