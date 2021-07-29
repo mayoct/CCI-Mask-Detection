@@ -144,13 +144,15 @@ jobs:
           name: Test detect.py
           command: |
             cd yolov5
-            rm -rf runs/detect/exp
+            rm -rf runs/detect
+            mkdir -p runs/detect
             python detect.py --weights yolov5s.pt --img 640 --conf 0.25 --source ../images/
             python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/mask.jpg
             python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/no_mask.jpg
+            zip -r runs/detect.zip runs/detect
       - store_artifacts:
-          path: runs/detect/exp
-          destination: image_checked
+          path: runs/detect.zip
+          destination: detect.zip
   dummy:
     machine:
       resource_class: gpu.nvidia.small
