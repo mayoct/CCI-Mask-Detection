@@ -34,7 +34,9 @@ jobs:
           name: Setup up Python environment for YOLOv5
           command: |
             cd yolov5
-            pyenv install 3.7.11
+            if [! -d "$(pyenv root)/version/3.7.11" ]; then
+              pyenv install 3.7.11
+            fi
             pyenv local 3.7.11
             pip install -r requirements.txt
             cd ..
@@ -101,7 +103,9 @@ jobs:
           command: |
             cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
             cd yolov5
-            pyenv install 3.7.11
+            if [! -d "$(pyenv root)/version/3.7.11" ]; then
+              pyenv install 3.7.11
+            fi
             pyenv local 3.7.11
             pip install -r requirements.txt
             cd ..
