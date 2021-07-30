@@ -128,9 +128,9 @@ jobs:
             cd yolov5
             rm -rf runs/detect
             mkdir -p runs/detect
-            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/face_w_mask1.jpg
-            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/face_w_mask2.jpg
-            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/face_wo_mask1.jpg
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/face_w_mask3.jpg
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/face_w_mask4.jpg
+            python detect.py --weights ./runs/train/exp/weights/best.pt --img 640 --conf 0.25 --source ../images/face_wo_mask2.jpg
             zip -r runs/detect.zip runs/detect
       - store_artifacts:
           path: yolov5/runs/detect.zip
